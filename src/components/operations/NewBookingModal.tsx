@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Calendar, DollarSign, Clock, ShieldCheck } from 'lucide-react';
+import { X, ShieldCheck } from 'lucide-react';
 import { useShopStore } from '../../store/shop-store';
 import { PackageType } from '../../types';
 
@@ -9,7 +9,7 @@ interface NewBookingModalProps {
 }
 
 export const NewBookingModal: React.FC<NewBookingModalProps> = ({ isOpen, onClose }) => {
-  const { vehicles, technicians, addNewBooking } = useShopStore();
+  const { vehicles, technicians, addNewBooking, t } = useShopStore();
 
   const [selectedVehicleId, setSelectedVehicleId] = useState(vehicles[0]?.id || '');
   const [bayNumber, setBayNumber] = useState<number>(1);
@@ -102,7 +102,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({ isOpen, onClos
         <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-card-subtle">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-emerald" />
-            <h2 className="text-sm font-semibold font-sans text-foreground">Schedule Studio Job</h2>
+            <h2 className="text-sm font-semibold font-sans text-foreground">{t.bookingModal.title}</h2>
           </div>
           <button
             onClick={onClose}
@@ -117,7 +117,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({ isOpen, onClos
           {/* Vehicle Selector */}
           <div>
             <label className="block text-[11px] font-mono text-foreground-muted mb-1 uppercase">
-              Client Vehicle (License Plate)
+              {t.bookingModal.clientVehicle}
             </label>
             <select
               value={selectedVehicleId}
@@ -135,7 +135,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({ isOpen, onClos
           {/* Package Type */}
           <div>
             <label className="block text-[11px] font-mono text-foreground-muted mb-1 uppercase">
-              Detailing / Protection Package
+              {t.bookingModal.package}
             </label>
             <select
               value={packageType}
@@ -157,7 +157,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({ isOpen, onClos
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[11px] font-mono text-foreground-muted mb-1 uppercase">
-                Target Bay
+                {t.bookingModal.targetBay}
               </label>
               <select
                 value={bayNumber}
@@ -173,7 +173,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({ isOpen, onClos
 
             <div>
               <label className="block text-[11px] font-mono text-foreground-muted mb-1 uppercase">
-                Assigned Specialist
+                {t.bookingModal.specialist}
               </label>
               <select
                 value={technicianId}
@@ -193,7 +193,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({ isOpen, onClos
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-[11px] font-mono text-foreground-muted mb-1 uppercase">
-                Total Price ($ USD)
+                {t.bookingModal.totalPrice}
               </label>
               <div className="relative">
                 <input
@@ -207,7 +207,7 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({ isOpen, onClos
 
             <div>
               <label className="block text-[11px] font-mono text-foreground-muted mb-1 uppercase">
-                Estimated Bay Hours
+                {t.bookingModal.bayHours}
               </label>
               <input
                 type="number"
@@ -226,13 +226,13 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({ isOpen, onClos
               onClick={onClose}
               className="px-3 py-2 rounded border border-border text-foreground-muted hover:text-foreground hover:bg-card-hover font-medium transition-colors"
             >
-              Cancel
+              {t.bookingModal.cancel}
             </button>
             <button
               type="submit"
               className="px-4 py-2 rounded bg-emerald hover:bg-emerald/90 text-background font-semibold font-sans transition-all shadow-sm"
             >
-              Confirm & Book Bay
+              {t.bookingModal.confirm}
             </button>
           </div>
         </form>

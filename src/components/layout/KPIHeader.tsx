@@ -1,8 +1,8 @@
 import React from 'react';
-import { ResponsiveContainer, LineChart, Line, Tooltip } from 'recharts';
-import { TrendingUp, TrendingDown, DollarSign, Activity, Target, Zap } from 'lucide-react';
+import { ResponsiveContainer, LineChart, Line } from 'recharts';
+import { DollarSign, Activity, Target, Zap } from 'lucide-react';
 import { useShopStore } from '../../store/shop-store';
-import { cn, formatCurrency } from '../../lib/utils';
+import { cn } from '../../lib/utils';
 
 // Sparkline Mock Data
 const REVENUE_SPARK = [
@@ -26,48 +26,48 @@ const ROAS_SPARK = [
 ];
 
 export const KPIHeader: React.FC = () => {
-  const { bayUtilSlider, adSpendSlider } = useShopStore();
+  const { bayUtilSlider, adSpendSlider, t } = useShopStore();
 
   const kpis = [
     {
-      title: 'Net Monthly Revenue',
+      title: t.kpi.netRevenue,
       value: '$14,280',
       delta: '+18.4%',
       deltaType: 'positive',
-      subtext: 'vs previous 30-day cycle',
+      subtext: t.kpi.revSubtext,
       icon: DollarSign,
       sparkData: REVENUE_SPARK,
       color: '#10B981',
       unit: '$',
     },
     {
-      title: 'Bay Utilization Rate',
+      title: t.kpi.bayUtil,
       value: `${bayUtilSlider.toFixed(1)}%`,
-      delta: bayUtilSlider >= 80 ? 'Optimal' : 'Healthy',
+      delta: bayUtilSlider >= 80 ? t.kpi.optimal : t.kpi.healthy,
       deltaType: 'positive',
-      subtext: 'Target 80–85% billable cap',
+      subtext: t.kpi.bayUtilSubtext,
       icon: Activity,
       sparkData: UTILIZATION_SPARK,
       color: '#10B981',
       unit: '%',
     },
     {
-      title: 'Instagram Blended CAC',
+      title: t.kpi.cac,
       value: '$18.40',
       delta: '-12.3%',
       deltaType: 'positive', // Lower CAC is good
-      subtext: 'Target < $22.00 / booking',
+      subtext: t.kpi.cacSubtext,
       icon: Target,
       sparkData: CAC_SPARK,
       color: '#10B981',
       unit: '$',
     },
     {
-      title: 'Meta Blended ROAS',
+      title: t.kpi.roas,
       value: '4.82x',
       delta: '+0.65x',
       deltaType: 'positive',
-      subtext: `$${adSpendSlider}/day scaling budget`,
+      subtext: `$${adSpendSlider}/d ${t.kpi.roasSubtext}`,
       icon: Zap,
       sparkData: ROAS_SPARK,
       color: '#10B981',

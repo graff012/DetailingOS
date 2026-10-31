@@ -1,29 +1,21 @@
 import React, { useState } from 'react';
 import {
   Radio,
-  Send,
   Zap,
   MapPin,
   Sun,
   CloudRain,
-  ShieldAlert,
   Play,
   Pause,
-  Sliders,
   Sparkles,
   Terminal,
-  Clock,
   CheckCircle2,
-  AlertCircle,
   Eye,
-  DollarSign,
-  Maximize2,
   RefreshCw,
 } from 'lucide-react';
 import { useShopStore } from '../../store/shop-store';
 import { MetaMCPService, KNOWN_INTERESTS } from '../../services/meta-mcp.service';
 import { formatCurrency, formatNumber, cn } from '../../lib/utils';
-import { IgCampaign } from '../../types';
 
 export const IGRadarTab: React.FC = () => {
   const {
@@ -31,9 +23,9 @@ export const IGRadarTab: React.FC = () => {
     weather,
     mcpLogs,
     toggleCampaignStatus,
-    updateKillSwitchThreshold,
     executeNaturalLanguageMcpPrompt,
     activateWeatherPromotion,
+    t,
   } = useShopStore();
 
   const metaMcp = MetaMCPService.getInstance();
@@ -49,8 +41,6 @@ export const IGRadarTab: React.FC = () => {
 
   // Interactive Geo-Radius Builder state
   const [geoRadius, setGeoRadius] = useState<number>(10);
-  const [minAge, setMinAge] = useState<number>(25);
-  const [maxAge, setMaxAge] = useState<number>(60);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([
     'Porsche',
     'BMW M',
@@ -83,12 +73,12 @@ export const IGRadarTab: React.FC = () => {
           <div className="flex items-center gap-2">
             <Radio className="w-4 h-4 text-emerald" />
             <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground font-mono">
-              Meta Ads MCP Natural Language Command Bar
+              {t.radar.title}
             </h2>
           </div>
           <span className="text-[10px] font-mono text-foreground-subtle flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
-            Meta Marketing Graph API v25.0
+            {t.radar.apiSubtitle}
           </span>
         </div>
 
@@ -99,7 +89,7 @@ export const IGRadarTab: React.FC = () => {
               type="text"
               value={promptText}
               onChange={e => setPromptText(e.target.value)}
-              placeholder="e.g. Target Porsche and BMW owners within 10km with Gyeon Reel at $20/day..."
+              placeholder={t.radar.inputPlaceholder}
               className="w-full bg-background border border-border rounded px-3.5 py-2.5 text-xs text-foreground placeholder:text-foreground-subtle focus:outline-none focus:border-border-bright font-sans"
             />
           </div>
@@ -113,13 +103,13 @@ export const IGRadarTab: React.FC = () => {
             ) : (
               <Zap className="w-3.5 h-3.5 stroke-[2.5]" />
             )}
-            <span>{isExecutingPrompt ? 'Executing MCP...' : 'Compile & Deploy'}</span>
+            <span>{isExecutingPrompt ? t.radar.compilingBtn : t.radar.compileBtn}</span>
           </button>
         </div>
 
         {/* Preset Prompt Suggestions */}
         <div className="flex flex-wrap gap-1.5 pt-1 text-[11px] font-mono">
-          <span className="text-foreground-subtle text-[10px] self-center mr-1">PRESETS:</span>
+          <span className="text-foreground-subtle text-[10px] self-center mr-1">{t.radar.presets}</span>
           {[
             'Boost SUV ads for rainy weekend at $25/day within 8km',
             'Target Porsche 911 GT3 owners within 12km with XPEL PPF Reel at $40/day',
@@ -140,10 +130,10 @@ export const IGRadarTab: React.FC = () => {
           <div className="flex items-center justify-between text-[11px] font-mono text-foreground-subtle">
             <span className="flex items-center gap-1.5 font-semibold text-foreground">
               <Terminal className="w-3 h-3 text-emerald" />
-              Compiled MCP Tool Execution Plan:
+              {t.radar.planTitle}
             </span>
             <span>
-              Target Budget: ${parsedPreview.detectedDailyBudget}/day • Radius: {parsedPreview.detectedRadiusKm}km
+              {t.radar.targetBudget} ${parsedPreview.detectedDailyBudget}/d • {t.radar.radius} {parsedPreview.detectedRadiusKm}km
             </span>
           </div>
 
@@ -175,11 +165,11 @@ export const IGRadarTab: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Sun className="w-4 h-4 text-amber" />
                 <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground font-mono">
-                  Weather-Triggered Promo Engine
+                  {t.radar.weatherTitle}
                 </h3>
               </div>
               <span className="text-[10px] font-mono text-emerald bg-emerald/10 border border-emerald/20 px-2 py-0.5 rounded">
-                Weather Window: OPEN
+                {t.radar.weatherWindowOpen}
               </span>
             </div>
 
@@ -203,7 +193,7 @@ export const IGRadarTab: React.FC = () => {
                   )}
                   <span className="text-xs font-bold tabular-nums">{w.tempC}°C</span>
                   <span className="text-[9px] text-foreground-subtle tabular-nums">
-                    {w.precipitationProbability}% Rain
+                    {w.precipitationProbability}%
                   </span>
                 </div>
               ))}
@@ -213,11 +203,10 @@ export const IGRadarTab: React.FC = () => {
             <div className="p-3 rounded bg-amber/5 border border-amber/20 text-xs font-sans space-y-1">
               <div className="flex items-center gap-1.5 font-semibold text-amber text-xs">
                 <Sparkles className="w-3.5 h-3.5" />
-                Sunny Window Trigger Activated
+                {t.radar.sunnyWindowActive}
               </div>
               <p className="text-foreground-subtle text-[11px] leading-relaxed">
-                4 consecutive sunny days ahead in Munich/Stuttgart. Rain has cleared paint contaminants.
-                Recommended: Deploy a $25/day "Post-Rain Hydrophobic Decon" Reel targeting vehicles within 8km.
+                {t.radar.weatherPromptDesc}
               </p>
             </div>
           </div>
@@ -237,12 +226,12 @@ export const IGRadarTab: React.FC = () => {
               {weatherCamp.status === 'ACTIVE' ? (
                 <>
                   <CheckCircle2 className="w-4 h-4 text-emerald" />
-                  <span>Weather Promo Currently ACTIVE via MCP (Radius: 8km • $25/day)</span>
+                  <span>{t.radar.weatherBtnActive}</span>
                 </>
               ) : (
                 <>
                   <Play className="w-4 h-4 fill-current" />
-                  <span>1-Click Activate Weather Promo via MCP</span>
+                  <span>{t.radar.weatherBtnTrigger}</span>
                 </>
               )}
             </button>
@@ -255,11 +244,11 @@ export const IGRadarTab: React.FC = () => {
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-emerald" />
               <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground font-mono">
-                Geo-Radius & Luxury Audience Builder
+                {t.radar.geoTitle}
               </h3>
             </div>
             <span className="text-[10px] font-mono text-foreground-subtle">
-              Studio: {metaMcp.GARAGE_COORDINATES.lat.toFixed(4)}°N, {metaMcp.GARAGE_COORDINATES.lng.toFixed(4)}°E
+              {t.radar.studioCoords} {metaMcp.GARAGE_COORDINATES.lat.toFixed(4)}°N, {metaMcp.GARAGE_COORDINATES.lng.toFixed(4)}°E
             </span>
           </div>
 
@@ -267,10 +256,10 @@ export const IGRadarTab: React.FC = () => {
           <div className="space-y-1.5">
             <div className="flex justify-between items-center text-xs">
               <span className="font-medium text-foreground font-sans">
-                Studio Geo-Radius Drop-Pin
+                {t.radar.dropPinRadius}
               </span>
               <span className="font-mono font-bold text-emerald tabular-nums bg-background px-2 py-0.5 rounded border border-border">
-                {geoRadius} km radius
+                {geoRadius} {t.radar.radiusUnits}
               </span>
             </div>
             <input
@@ -283,16 +272,16 @@ export const IGRadarTab: React.FC = () => {
               className="w-full accent-emerald bg-background h-1.5 rounded-lg appearance-none cursor-pointer"
             />
             <div className="flex justify-between text-[10px] font-mono text-foreground-subtle">
-              <span>5 km (City Center VIP)</span>
-              <span>15 km (Greater Metro)</span>
-              <span>25 km (Regional Supercar Belt)</span>
+              <span>{t.radar.cityCenterVip}</span>
+              <span>{t.radar.greaterMetro}</span>
+              <span>{t.radar.regionalBelt}</span>
             </div>
           </div>
 
           {/* Luxury Interest Cluster Tags */}
           <div className="space-y-2">
             <label className="block text-[11px] font-mono text-foreground-muted uppercase">
-              High-Ticket Interest Clusters (Graph API Verified)
+              {t.radar.highTicketClusters}
             </label>
             <div className="flex flex-wrap gap-1.5">
               {Object.keys(KNOWN_INTERESTS).map(key => {
@@ -322,9 +311,9 @@ export const IGRadarTab: React.FC = () => {
 
           {/* Audience Estimate Pill */}
           <div className="p-2.5 rounded bg-background border border-border flex items-center justify-between text-xs font-mono">
-            <span className="text-foreground-subtle">Estimated High-Ticket Reach:</span>
+            <span className="text-foreground-subtle">{t.radar.estimatedReach}</span>
             <span className="text-emerald font-bold tabular-nums">
-              ~{formatNumber(Math.round(18000 * Math.pow(geoRadius / 5, 1.35)))} Luxury Owners
+              ~{formatNumber(Math.round(18000 * Math.pow(geoRadius / 5, 1.35)))} {t.radar.luxuryOwners}
             </span>
           </div>
         </div>
@@ -336,11 +325,11 @@ export const IGRadarTab: React.FC = () => {
           <div className="flex items-center gap-2">
             <Eye className="w-4 h-4 text-emerald" />
             <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground font-mono">
-              Active Reels Matrix & Automated Kill-Switch Rules
+              {t.radar.reelsMatrixTitle}
             </h3>
           </div>
           <span className="text-[10px] font-mono text-foreground-subtle">
-            Auto-pause armed if Cost Per Lead &gt; $18.00
+            {t.radar.killSwitchArmed}
           </span>
         </div>
 
@@ -349,14 +338,14 @@ export const IGRadarTab: React.FC = () => {
           <table className="w-full text-left text-xs font-mono">
             <thead>
               <tr className="border-b border-border text-foreground-subtle text-[10px] uppercase">
-                <th className="py-2 px-3">Ad Creative & Campaign</th>
-                <th className="py-2 px-3">Radius</th>
-                <th className="py-2 px-3">Spend</th>
-                <th className="py-2 px-3">Leads</th>
-                <th className="py-2 px-3">Cost / Lead</th>
-                <th className="py-2 px-3">Attr. Revenue</th>
-                <th className="py-2 px-3">ROAS</th>
-                <th className="py-2 px-3 text-right">Kill / Scale Status</th>
+                <th className="py-2 px-3">{t.radar.colCreative}</th>
+                <th className="py-2 px-3">{t.radar.colRadius}</th>
+                <th className="py-2 px-3">{t.radar.colSpend}</th>
+                <th className="py-2 px-3">{t.radar.colLeads}</th>
+                <th className="py-2 px-3">{t.radar.colCpl}</th>
+                <th className="py-2 px-3">{t.radar.colRevenue}</th>
+                <th className="py-2 px-3">{t.radar.colRoas}</th>
+                <th className="py-2 px-3 text-right">{t.radar.colStatus}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
@@ -432,7 +421,7 @@ export const IGRadarTab: React.FC = () => {
                       <div className="flex items-center justify-end gap-2">
                         {isKillSwitched ? (
                           <span className="px-2 py-0.5 rounded bg-guardsRed/10 border border-guardsRed/30 text-guardsRed text-[10px] font-bold">
-                            RULE KILLED (&gt; $18)
+                            {t.radar.ruleKilled}
                           </span>
                         ) : (
                           <button
@@ -447,12 +436,12 @@ export const IGRadarTab: React.FC = () => {
                             {camp.status === 'ACTIVE' ? (
                               <>
                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
-                                ACTIVE
+                                {t.common.active}
                               </>
                             ) : (
                               <>
                                 <Pause className="w-3 h-3" />
-                                PAUSED
+                                {t.common.paused}
                               </>
                             )}
                           </button>
@@ -473,11 +462,11 @@ export const IGRadarTab: React.FC = () => {
           <div className="flex items-center gap-2">
             <Terminal className="w-4 h-4 text-emerald" />
             <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
-              Meta MCP JSON-RPC 2.0 Call Stack (Graph API v25.0)
+              {t.radar.mcpCallStack}
             </h3>
           </div>
           <span className="text-[10px] text-foreground-subtle">
-            {mcpLogs.length} RPC Calls Logged
+            {mcpLogs.length} {t.radar.rpcCallsLogged}
           </span>
         </div>
 

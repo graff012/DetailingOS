@@ -1,23 +1,16 @@
 import React, { useState } from 'react';
 import {
   Car,
-  Clock,
   ShieldCheck,
   CheckCircle2,
-  AlertTriangle,
-  MapPin,
   Camera,
   Share2,
-  Plus,
   Trash2,
-  Wrench,
-  Sparkles,
   ArrowRight,
-  Maximize2,
 } from 'lucide-react';
 import { useShopStore } from '../../store/shop-store';
 import { DamageType, PanelZone } from '../../types';
-import { formatHours, formatCurrency, cn } from '../../lib/utils';
+import { formatHours, cn } from '../../lib/utils';
 
 export const LiveBaysWalkaroundTab: React.FC = () => {
   const {
@@ -31,15 +24,15 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
     removeInspectionMarker,
     beforeAfterMedia,
     pushMediaToIgQueue,
+    language,
+    t,
   } = useShopStore();
 
   const selectedVehicle = vehicles.find(v => v.id === selectedVehicleId) || vehicles[0];
 
   // Damage marker placement form state
   const [selectedDamageType, setSelectedDamageType] = useState<DamageType>('ROCK_CHIP');
-  const [selectedPanelZone, setSelectedPanelZone] = useState<PanelZone>('FRONT_BUMPER');
   const [markerNotes, setMarkerNotes] = useState('');
-  const [severity, setSeverity] = useState<'LIGHT' | 'MODERATE' | 'SEVERE'>('LIGHT');
 
   // Handle click on top-down SVG vehicle to drop pin
   const handleSvgClick = (e: React.MouseEvent<SVGSVGElement>) => {
@@ -67,21 +60,31 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
       damageType: selectedDamageType,
       coordinateX: x,
       coordinateY: y,
-      severity,
-      notes: markerNotes || `Liability pre-inspection note for ${selectedDamageType.replace('_', ' ')}`,
+      severity: 'LIGHT',
+      notes: markerNotes || `Pre-inspection note for ${selectedDamageType.replace('_', ' ')}`,
     });
 
     setMarkerNotes('');
   };
 
   const damageColorMap: Record<DamageType, string> = {
-    SCRATCH: '#EF4444', // Guards Red
-    DENT: '#F59E0B', // Amber
+    SCRATCH: '#EF4444',
+    DENT: '#F59E0B',
     ROCK_CHIP: '#EF4444',
     SWIRL_MARKS: '#3B82F6',
     CLEARCOAT_OXIDATION: '#A855F7',
     CURB_RASH: '#F59E0B',
     WATER_SPOTS: '#06B6D4',
+  };
+
+  const damageLabels: Record<DamageType, Record<'en' | 'ru' | 'uz', string>> = {
+    ROCK_CHIP: { en: 'Rock Chip', ru: 'Скол', uz: 'Tosh izi' },
+    SCRATCH: { en: 'Scratch', ru: 'Царапина', uz: 'Chiziq' },
+    SWIRL_MARKS: { en: 'Swirl Marks', ru: 'Паутинка', uz: 'Gologramma' },
+    DENT: { en: 'Dent', ru: 'Вмятина', uz: 'Pachoqlik' },
+    CURB_RASH: { en: 'Curb Rash', ru: 'Притирка диска', uz: 'Disk tirnalishi' },
+    CLEARCOAT_OXIDATION: { en: 'Oxidation', ru: 'Окисление лака', uz: 'Lak xiralashishi' },
+    WATER_SPOTS: { en: 'Water Spots', ru: 'Водный камень', uz: 'Suv dog‘lari' },
   };
 
   return (
@@ -92,11 +95,11 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
           <div className="flex items-center gap-2">
             <Car className="w-4 h-4 text-emerald" />
             <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground font-mono">
-              Live Shop Bays Tracker (Turnaround & Stage Stepper)
+              {t.bays.title}
             </h2>
           </div>
           <span className="text-[10px] font-mono text-foreground-subtle">
-            All 4 Bays Monitored Live
+            {t.bays.monitored}
           </span>
         </div>
 
@@ -119,7 +122,7 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
                       {bay.name}
                     </span>
                     <span className="text-[10px] font-mono text-foreground-subtle">
-                      Benchmark: ${bay.hourlyRevenueBenchmark}/hr
+                      {t.bays.benchmark} ${bay.hourlyRevenueBenchmark}/hr
                     </span>
                   </div>
                   <span
@@ -130,7 +133,7 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
                         : 'text-foreground-subtle bg-background border-border'
                     )}
                   >
-                    {bay.status}
+                    {bay.status === 'OCCUPIED' ? t.common.occupied : t.common.available}
                   </span>
                 </div>
 
@@ -144,7 +147,7 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
                           {booking.vehicleModel}
                         </span>
                         <span className="text-[10px] text-foreground-subtle truncate">
-                          Tech: {booking.technicianName}
+                          {booking.technicianName}
                         </span>
                       </div>
                       <span className="font-mono font-semibold text-[11px] px-2 py-0.5 rounded bg-background border border-border text-foreground tabular-nums shrink-0">
@@ -155,7 +158,7 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
                     {/* Stage Badge & Elapsed Time */}
                     <div className="p-2 rounded bg-background border border-border text-[11px] font-mono space-y-1.5">
                       <div className="flex justify-between items-center text-[10px]">
-                        <span className="text-foreground-subtle uppercase">Current Stage:</span>
+                        <span className="text-foreground-subtle uppercase">{t.bays.currentStage}</span>
                         <span className="text-emerald font-semibold">{booking.stage}</span>
                       </div>
 
@@ -168,8 +171,8 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
                       </div>
 
                       <div className="flex justify-between text-[10px] text-foreground-subtle">
-                        <span>Elapsed: {formatHours(booking.elapsedMinutes)}</span>
-                        <span>Est: {formatHours(booking.estimatedMinutes)}</span>
+                        <span>{t.bays.elapsed} {formatHours(booking.elapsedMinutes)}</span>
+                        <span>{t.bays.est} {formatHours(booking.estimatedMinutes)}</span>
                       </div>
                     </div>
 
@@ -181,7 +184,7 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
                         className="py-1 px-2 rounded bg-card-hover hover:bg-card border border-border text-[10px] font-mono text-foreground font-medium transition-colors flex items-center justify-center gap-1 disabled:opacity-40"
                       >
                         <ArrowRight className="w-3 h-3 text-emerald" />
-                        <span>Advance Stage</span>
+                        <span>{t.bays.advanceStage}</span>
                       </button>
 
                       <button
@@ -190,13 +193,13 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
                         className="py-1 px-2 rounded bg-emerald/10 hover:bg-emerald/20 text-emerald border border-emerald/30 text-[10px] font-mono font-medium transition-colors flex items-center justify-center gap-1 disabled:opacity-40"
                       >
                         <CheckCircle2 className="w-3 h-3" />
-                        <span>Complete Job</span>
+                        <span>{t.bays.completeJob}</span>
                       </button>
                     </div>
                   </div>
                 ) : (
                   <div className="py-8 text-center text-xs text-foreground-subtle font-mono">
-                    Bay Ready for Next Vehicle
+                    {t.bays.bayReady}
                   </div>
                 )}
               </div>
@@ -213,7 +216,7 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-emerald" />
               <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground font-mono">
-                Digital Vehicle Walkaround (Liability Pre-Inspection)
+                {t.bays.walkaroundTitle}
               </h3>
             </div>
 
@@ -232,9 +235,9 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
           </div>
 
           <div className="flex items-center justify-between text-xs font-mono text-foreground-subtle">
-            <span>Click any vehicle panel to drop a liability damage pin</span>
+            <span>{t.bays.clickPrompt}</span>
             <span className="text-emerald font-semibold">
-              {selectedVehicle.inspectionMarkers.length} Active Liability Markers
+              {selectedVehicle.inspectionMarkers.length} {t.bays.activeLiabilityMarkers}
             </span>
           </div>
 
@@ -245,7 +248,6 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
               className="w-full h-full max-h-72 cursor-crosshair drop-shadow-md"
               onClick={handleSvgClick}
             >
-              {/* Car Silhouette Top-Down */}
               {/* Wheels */}
               <rect x="22" y="15" width="5" height="14" rx="2" fill="#27272A" stroke="#3F3F46" strokeWidth="0.5" />
               <rect x="73" y="15" width="5" height="14" rx="2" fill="#27272A" stroke="#3F3F46" strokeWidth="0.5" />
@@ -270,8 +272,6 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
 
               {/* Front Bumper & Splitter */}
               <path d="M33 11 C42 8, 58 8, 67 11" fill="none" stroke="#27272A" strokeWidth="1" />
-              
-              {/* Hood Lines */}
               <path d="M35 15 L36 33 L64 33 L65 15" fill="#18181C" stroke="#27272A" strokeWidth="0.75" />
 
               {/* Windshield */}
@@ -328,7 +328,7 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
 
             {/* Quick Pin Type Palette Overlay */}
             <div className="absolute bottom-2 left-2 flex items-center gap-1.5 bg-card/90 border border-border px-2 py-1 rounded text-[10px] font-mono">
-              <span className="text-foreground-subtle">Pin:</span>
+              <span className="text-foreground-subtle">{t.bays.pinPalette}</span>
               {(['ROCK_CHIP', 'SCRATCH', 'SWIRL_MARKS', 'DENT', 'CURB_RASH'] as DamageType[]).map(type => (
                 <button
                   key={type}
@@ -347,7 +347,7 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
                     className="inline-block w-2 h-2 rounded-full mr-1"
                     style={{ backgroundColor: damageColorMap[type] }}
                   />
-                  {type.replace('_', ' ')}
+                  {damageLabels[type][language] || type}
                 </button>
               ))}
             </div>
@@ -359,7 +359,7 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
           <div>
             <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
               <h4 className="text-xs font-semibold uppercase tracking-wider text-foreground font-mono">
-                Liability Log: {selectedVehicle.licensePlate}
+                {t.bays.liabilityLog} {selectedVehicle.licensePlate}
               </h4>
               <span className="text-[10px] font-mono text-foreground-subtle">
                 {selectedVehicle.make} {selectedVehicle.model} ({selectedVehicle.color})
@@ -370,7 +370,7 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
             <div className="max-h-64 overflow-y-auto space-y-2 my-2 pr-1">
               {selectedVehicle.inspectionMarkers.length === 0 ? (
                 <div className="py-12 text-center text-xs text-foreground-subtle font-mono">
-                  No pre-existing damages recorded. Vehicle clean.
+                  {t.bays.noDamages}
                 </div>
               ) : (
                 selectedVehicle.inspectionMarkers.map((marker, index) => (
@@ -388,14 +388,14 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
                       <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="font-bold text-foreground">
-                            {marker.damageType.replace('_', ' ')}
+                            {damageLabels[marker.damageType]?.[language] || marker.damageType}
                           </span>
                           <span className="text-[10px] text-foreground-subtle">
                             • {marker.panelZone.replace(/_/g, ' ')}
                           </span>
                         </div>
                         <p className="text-[10px] text-foreground-subtle truncate mt-0.5">
-                          {marker.notes || 'Documented before technician handover.'}
+                          {marker.notes || 'Documented liability inspection note.'}
                         </p>
                       </div>
                     </div>
@@ -423,23 +423,23 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
               className="w-full bg-background border border-border rounded px-2.5 py-1.5 text-xs text-foreground placeholder:text-foreground-subtle font-mono focus:outline-none"
             />
             <div className="text-[10px] font-mono text-foreground-subtle">
-              Type note above then click the car diagram to place pin.
+              {t.bays.notePrompt}
             </div>
           </div>
         </div>
       </div>
 
-      {/* 3. Before/After Media Vault (5-Second Transformation Showcase) */}
+      {/* 3. Before/After Media Vault */}
       <div className="p-4 rounded-lg bg-card border border-border shadow-card space-y-3">
         <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
           <div className="flex items-center gap-2">
             <Camera className="w-4 h-4 text-emerald" />
             <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground font-mono">
-              Before/After Media Vault & 1-Click IG MCP Queue
+              {t.bays.mediaVaultTitle}
             </h3>
           </div>
           <span className="text-[10px] font-mono text-foreground-subtle">
-            Detailer Transformation Showcase
+            {t.bays.mediaVaultSub}
           </span>
         </div>
 
@@ -500,12 +500,12 @@ export const LiveBaysWalkaroundTab: React.FC = () => {
                 {media.isQueuedForIG ? (
                   <>
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald" />
-                    <span>Queued to Meta MCP Reel Ads</span>
+                    <span>{t.bays.queuedToIg}</span>
                   </>
                 ) : (
                   <>
                     <Share2 className="w-3.5 h-3.5" />
-                    <span>Push to IG MCP Ad Queue</span>
+                    <span>{t.bays.pushToIg}</span>
                   </>
                 )}
               </button>

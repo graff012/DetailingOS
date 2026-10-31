@@ -1,22 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   FlaskConical,
   Clock,
-  DollarSign,
-  AlertTriangle,
   Send,
   MessageSquare,
-  Smartphone,
   Plus,
-  RefreshCw,
-  ShieldCheck,
-  CheckCircle2,
   Users,
-  Percent,
 } from 'lucide-react';
 import { useShopStore } from '../../store/shop-store';
-import { formatCurrency, formatNumber, cn } from '../../lib/utils';
-import { ChemicalInventory, Vehicle } from '../../types';
+import { formatCurrency, cn } from '../../lib/utils';
 
 export const OperationsTab: React.FC = () => {
   const {
@@ -26,13 +18,11 @@ export const OperationsTab: React.FC = () => {
     customers,
     sendRetentionReminder,
     technicians,
+    t,
   } = useShopStore();
 
-  const [restockAmount, setRestockAmount] = useState<Record<string, number>>({});
-
   const handleRestock = (id: string, defaultAmount: number) => {
-    const amt = restockAmount[id] || defaultAmount;
-    restockChemical(id, amt);
+    restockChemical(id, defaultAmount);
   };
 
   // Helper to calculate days remaining until maintenance
@@ -52,11 +42,11 @@ export const OperationsTab: React.FC = () => {
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-emerald" />
             <h2 className="text-xs font-semibold uppercase tracking-wider text-foreground font-mono">
-              Ceramic Coating & Wax Retention Engine (6-Month Warranty Decon)
+              {t.operations.retentionTitle}
             </h2>
           </div>
           <span className="text-[10px] font-mono text-foreground-subtle">
-            Automated Client Re-engagement
+            {t.operations.retentionSub}
           </span>
         </div>
 
@@ -64,12 +54,12 @@ export const OperationsTab: React.FC = () => {
           <table className="w-full text-left text-xs font-mono">
             <thead>
               <tr className="border-b border-border text-foreground-subtle text-[10px] uppercase">
-                <th className="py-2 px-3">Vehicle & Plate</th>
-                <th className="py-2 px-3">Owner / Contact</th>
-                <th className="py-2 px-3">Protection Coating</th>
-                <th className="py-2 px-3">Cycle Remaining</th>
-                <th className="py-2 px-3">Status</th>
-                <th className="py-2 px-3 text-right">Dispatch Retention Reminder</th>
+                <th className="py-2 px-3">{t.operations.colVehicle}</th>
+                <th className="py-2 px-3">{t.operations.colOwner}</th>
+                <th className="py-2 px-3">{t.operations.colCoating}</th>
+                <th className="py-2 px-3">{t.operations.colCycle}</th>
+                <th className="py-2 px-3">{t.operations.colStatus}</th>
+                <th className="py-2 px-3 text-right">{t.operations.colDispatch}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
@@ -79,20 +69,20 @@ export const OperationsTab: React.FC = () => {
 
                 let statusBadge = (
                   <span className="px-1.5 py-0.5 rounded text-[10px] font-bold text-emerald bg-emerald/10 border border-emerald/20">
-                    PROTECTED
+                    {t.operations.protected}
                   </span>
                 );
 
                 if (daysLeft <= 0) {
                   statusBadge = (
                     <span className="px-1.5 py-0.5 rounded text-[10px] font-bold text-guardsRed bg-guardsRed/10 border border-guardsRed/20 animate-pulse">
-                      DUE TODAY
+                      {t.operations.dueToday}
                     </span>
                   );
                 } else if (daysLeft <= 14) {
                   statusBadge = (
                     <span className="px-1.5 py-0.5 rounded text-[10px] font-bold text-amber bg-amber/10 border border-amber/20">
-                      EXPIRING SOON
+                      {t.operations.expiringSoon}
                     </span>
                   );
                 }
@@ -129,7 +119,7 @@ export const OperationsTab: React.FC = () => {
                     {/* Days Left */}
                     <td className="py-2.5 px-3 font-bold tabular-nums">
                       <span className={daysLeft <= 0 ? 'text-guardsRed' : daysLeft <= 14 ? 'text-amber' : 'text-emerald'}>
-                        {daysLeft <= 0 ? 'Expired' : `${daysLeft} days`}
+                        {daysLeft <= 0 ? t.operations.expired : `${daysLeft} ${t.common.days}`}
                       </span>
                     </td>
 
@@ -145,7 +135,7 @@ export const OperationsTab: React.FC = () => {
                           title="Send Instagram Direct Message"
                         >
                           <MessageSquare className="w-3 h-3 text-emerald" />
-                          <span>IG DM</span>
+                          <span>{t.operations.igDm}</span>
                         </button>
 
                         <button
@@ -154,7 +144,7 @@ export const OperationsTab: React.FC = () => {
                           title="Send Telegram Alert"
                         >
                           <Send className="w-3 h-3 text-blue-400" />
-                          <span>Telegram</span>
+                          <span>{t.operations.telegram}</span>
                         </button>
                       </div>
                     </td>
@@ -174,11 +164,11 @@ export const OperationsTab: React.FC = () => {
             <div className="flex items-center gap-2">
               <FlaskConical className="w-4 h-4 text-amber" />
               <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground font-mono">
-                Consumables & Chemical Burn-Rate Inventory
+                {t.operations.chemTitle}
               </h3>
             </div>
             <span className="text-[10px] font-mono text-foreground-subtle">
-              Auto-deducted per job
+              {t.operations.chemSub}
             </span>
           </div>
 
@@ -204,12 +194,12 @@ export const OperationsTab: React.FC = () => {
                               isCritical ? 'bg-guardsRed/10 text-guardsRed border border-guardsRed/30' : 'bg-amber/10 text-amber border border-amber/30'
                             )}
                           >
-                            {isCritical ? 'CRITICAL LOW' : 'REORDER AMBER'}
+                            {isCritical ? t.operations.criticalLow : t.operations.reorderAmber}
                           </span>
                         )}
                       </div>
                       <span className="text-[10px] text-foreground-subtle block">
-                        Brand: {chem.brand} • Burn Rate: -{chem.burnRatePerJob} {chem.unit}/job
+                        {chem.brand} • {t.operations.burnRate} -{chem.burnRatePerJob} {chem.unit}
                       </span>
                     </div>
 
@@ -218,7 +208,7 @@ export const OperationsTab: React.FC = () => {
                       className="px-2 py-1 rounded bg-card hover:bg-card-hover border border-border text-[10px] text-foreground hover:text-emerald font-medium transition-colors flex items-center gap-1"
                     >
                       <Plus className="w-3 h-3 text-emerald" />
-                      <span>Restock</span>
+                      <span>{t.operations.restock}</span>
                     </button>
                   </div>
 
@@ -240,13 +230,13 @@ export const OperationsTab: React.FC = () => {
 
                     <div className="flex justify-between text-[10px] text-foreground-subtle">
                       <span>
-                        Current:{' '}
+                        {t.operations.current}{' '}
                         <strong className="text-foreground tabular-nums">
                           {chem.currentStock} {chem.unit}
                         </strong>{' '}
-                        (Min: {chem.reorderThreshold} {chem.unit})
+                        ({t.operations.min} {chem.reorderThreshold} {chem.unit})
                       </span>
-                      <span>Unit Cost: ${chem.costPerUnit.toFixed(2)}</span>
+                      <span>{t.operations.unitCost} ${chem.costPerUnit.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -261,11 +251,11 @@ export const OperationsTab: React.FC = () => {
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-emerald" />
               <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground font-mono">
-                Technician Commission Split (25%–30% Labor)
+                {t.operations.commTitle}
               </h3>
             </div>
             <span className="text-[10px] font-mono text-emerald bg-emerald/10 border border-emerald/20 px-2 py-0.5 rounded">
-              Automated Payroll Logic
+              {t.operations.commSub}
             </span>
           </div>
 
@@ -297,13 +287,13 @@ export const OperationsTab: React.FC = () => {
                     </div>
 
                     <span className="px-2 py-0.5 rounded bg-emerald/10 border border-emerald/30 text-emerald text-[11px] font-bold tabular-nums">
-                      {Math.round(tech.commissionRate * 100)}% Split
+                      {Math.round(tech.commissionRate * 100)}% {t.operations.split}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 pt-1 border-t border-border/50 text-[11px]">
                     <div>
-                      <span className="text-[10px] text-foreground-subtle block">Base Salary:</span>
+                      <span className="text-[10px] text-foreground-subtle block">{t.operations.baseSalary}</span>
                       <span className="font-bold text-foreground tabular-nums">
                         {formatCurrency(tech.baseSalaryMonthly)}
                       </span>
@@ -311,7 +301,7 @@ export const OperationsTab: React.FC = () => {
 
                     <div>
                       <span className="text-[10px] text-foreground-subtle block">
-                        Commission ({tech.totalCompletedJobs} jobs):
+                        {t.operations.commission} ({tech.totalCompletedJobs}):
                       </span>
                       <span className="font-bold text-emerald tabular-nums">
                         +{formatCurrency(commissionEarned)}
@@ -319,7 +309,7 @@ export const OperationsTab: React.FC = () => {
                     </div>
 
                     <div className="text-right">
-                      <span className="text-[10px] text-foreground-subtle block">Total Payout:</span>
+                      <span className="text-[10px] text-foreground-subtle block">{t.operations.totalPayout}</span>
                       <span className="font-bold text-foreground text-xs tabular-nums">
                         {formatCurrency(totalPayout)}
                       </span>

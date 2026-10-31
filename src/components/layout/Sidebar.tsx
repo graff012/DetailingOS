@@ -8,7 +8,6 @@ import {
   ChevronRight,
   ShieldCheck,
   Zap,
-  Cpu,
   Clock,
   Sparkles,
 } from 'lucide-react';
@@ -16,7 +15,7 @@ import { useShopStore, ActiveTab } from '../../store/shop-store';
 import { cn } from '../../lib/utils';
 
 export const Sidebar: React.FC = () => {
-  const { activeTab, setActiveTab, bays, setIsCmdkOpen } = useShopStore();
+  const { activeTab, setActiveTab, bays, setIsCmdkOpen, t } = useShopStore();
   const [collapsed, setCollapsed] = useState(false);
 
   const navItems: Array<{
@@ -29,33 +28,33 @@ export const Sidebar: React.FC = () => {
   }> = [
     {
       id: 'forecast',
-      label: 'Executive Forecast',
-      badge: '90D',
+      label: t.nav.forecast.label,
+      badge: t.nav.forecast.badge,
       icon: TrendingUp,
-      description: 'LTV, CAC & Cashflow Cone',
+      description: t.nav.forecast.description,
     },
     {
       id: 'radar',
-      label: 'IG Targeting Radar',
-      badge: 'MCP Live',
+      label: t.nav.radar.label,
+      badge: t.nav.radar.badge,
       badgeColor: 'text-emerald bg-emerald/10 border-emerald/20',
       icon: Radio,
-      description: 'Meta Ads & Rule Engine',
+      description: t.nav.radar.description,
     },
     {
       id: 'bays',
-      label: 'Live Bays & Liability',
-      badge: '4 Active',
+      label: t.nav.bays.label,
+      badge: t.nav.bays.badge,
       icon: Car,
-      description: 'Turnaround & Damage Map',
+      description: t.nav.bays.description,
     },
     {
       id: 'operations',
-      label: 'Chemicals & Retention',
-      badge: '2 Alerts',
+      label: t.nav.operations.label,
+      badge: t.nav.operations.badge,
       badgeColor: 'text-amber bg-amber/10 border-amber/20',
       icon: FlaskConical,
-      description: 'Stock & Commission Split',
+      description: t.nav.operations.description,
     },
   ];
 
@@ -78,7 +77,9 @@ export const Sidebar: React.FC = () => {
             <div className="flex flex-col">
               <span className="font-semibold text-xs tracking-tight text-foreground font-mono flex items-center gap-1.5">
                 DETAILING<span className="text-emerald font-bold">OS</span>
-                <span className="text-[10px] uppercase font-mono px-1 py-0.2 bg-border text-foreground-muted rounded">PRO</span>
+                <span className="text-[10px] uppercase font-mono px-1 py-0.2 bg-border text-foreground-muted rounded">
+                  {t.common.pro}
+                </span>
               </span>
               <span className="text-[10px] text-foreground-subtle tracking-tight font-mono">ERP • MCP v26.0</span>
             </div>
@@ -113,7 +114,7 @@ export const Sidebar: React.FC = () => {
         >
           <div className="flex items-center gap-2 overflow-hidden">
             <Zap className="w-3.5 h-3.5 text-foreground-subtle group-hover:text-emerald shrink-0 transition-colors" />
-            {!collapsed && <span className="truncate text-[11px] font-sans">Plate / Action...</span>}
+            {!collapsed && <span className="truncate text-[11px] font-sans">{t.nav.searchQuick}</span>}
           </div>
           {!collapsed && (
             <kbd className="font-mono text-[10px] text-foreground-subtle px-1.5 py-0.5 rounded bg-card border border-border tabular-nums">
@@ -182,7 +183,7 @@ export const Sidebar: React.FC = () => {
             <div className="flex items-center justify-between text-[11px] font-mono text-foreground-subtle">
               <span className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
-                Meta MCP Host
+                {t.nav.mcpHost}
               </span>
               <span className="text-[10px] text-emerald tabular-nums">STDIO:25.0</span>
             </div>
@@ -190,9 +191,9 @@ export const Sidebar: React.FC = () => {
             <div className="p-2 rounded bg-background border border-border text-[11px] font-mono space-y-1">
               <div className="flex justify-between items-center text-foreground-subtle">
                 <span className="flex items-center gap-1 text-[10px]">
-                  <Clock className="w-3 h-3" /> Bay Load:
+                  <Clock className="w-3 h-3" /> {t.nav.bayLoad}
                 </span>
-                <span className="text-foreground font-semibold tabular-nums">{occupiedBaysCount}/4 Bays</span>
+                <span className="text-foreground font-semibold tabular-nums">{occupiedBaysCount}/4</span>
               </div>
               <div className="w-full h-1 bg-border rounded-full overflow-hidden">
                 <div
@@ -204,7 +205,7 @@ export const Sidebar: React.FC = () => {
 
             <div className="flex items-center justify-between pt-1 text-[10px] text-foreground-subtle font-mono">
               <span className="flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3 text-emerald" /> Studio Munich #01
+                <ShieldCheck className="w-3 h-3 text-emerald" /> {t.nav.studioLocation}
               </span>
               <span className="tabular-nums">48.13°N</span>
             </div>

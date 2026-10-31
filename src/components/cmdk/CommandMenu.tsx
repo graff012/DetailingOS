@@ -8,10 +8,7 @@ import {
   Radio,
   FlaskConical,
   Wrench,
-  ShieldAlert,
   ArrowRight,
-  Send,
-  Zap,
 } from 'lucide-react';
 import { useShopStore } from '../../store/shop-store';
 
@@ -25,8 +22,7 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
     setSelectedVehicleId,
     activateWeatherPromotion,
     campaigns,
-    sendRetentionReminder,
-    addToast,
+    t,
   } = useShopStore();
 
   const [search, setSearch] = useState('');
@@ -63,7 +59,7 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
             <Command.Input
               value={search}
               onValueChange={setSearch}
-              placeholder="Search license plate (e.g. M-GT-992), client, or run command..."
+              placeholder={t.cmdk.placeholder}
               className="w-full bg-transparent text-sm text-foreground placeholder:text-foreground-subtle focus:outline-none font-sans"
               autoFocus
             />
@@ -75,13 +71,13 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
           {/* Results List */}
           <Command.List className="max-h-[380px] overflow-y-auto p-2 space-y-2 text-xs">
             <Command.Empty className="py-8 text-center text-xs text-foreground-subtle font-mono">
-              No matching license plates, clients, or commands found.
+              {t.cmdk.noResults}
             </Command.Empty>
 
             {/* Quick Actions */}
-            <Command.Group heading="QUICK COMMANDS" className="text-[10px] font-mono text-foreground-subtle uppercase px-2 py-1">
+            <Command.Group heading={t.cmdk.quickCommands} className="text-[10px] font-mono text-foreground-subtle uppercase px-2 py-1">
               <Command.Item
-                value="new booking schedule vehicle"
+                value="new booking schedule vehicle новая запись bron qilish"
                 onSelect={() => {
                   setIsCmdkOpen(false);
                   onOpenNewBooking();
@@ -90,14 +86,14 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
               >
                 <div className="flex items-center gap-2.5">
                   <Wrench className="w-4 h-4 text-emerald" />
-                  <span className="font-medium text-xs">+ Schedule New Studio Booking</span>
+                  <span className="font-medium text-xs">{t.cmdk.scheduleBooking}</span>
                 </div>
                 <span className="font-mono text-[10px] text-foreground-subtle group-hover:text-foreground">Enter ↵</span>
               </Command.Item>
 
               {weatherCamp && (
                 <Command.Item
-                  value="activate weather promo mcp campaign"
+                  value="activate weather promo mcp campaign погода ob havo"
                   onSelect={async () => {
                     setIsCmdkOpen(false);
                     await activateWeatherPromotion(weatherCamp.id);
@@ -106,7 +102,7 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
                 >
                   <div className="flex items-center gap-2.5">
                     <Sparkles className="w-4 h-4 text-amber" />
-                    <span className="font-medium text-xs">Deploy Weather-Triggered Reel via MCP (8km Radius)</span>
+                    <span className="font-medium text-xs">{t.cmdk.deployWeatherPromo}</span>
                   </div>
                   <span className="font-mono text-[10px] text-emerald">1-Click MCP</span>
                 </Command.Item>
@@ -114,9 +110,9 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
             </Command.Group>
 
             {/* Navigation Commands */}
-            <Command.Group heading="NAVIGATION VIEWS" className="text-[10px] font-mono text-foreground-subtle uppercase px-2 py-1">
+            <Command.Group heading={t.cmdk.navigationViews} className="text-[10px] font-mono text-foreground-subtle uppercase px-2 py-1">
               <Command.Item
-                value="view overview executive 90-day forecast ltv cac"
+                value="view overview executive 90-day forecast ltv cac прогноз prognoz"
                 onSelect={() => {
                   setActiveTab('forecast');
                   setIsCmdkOpen(false);
@@ -125,13 +121,13 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
               >
                 <div className="flex items-center gap-2.5">
                   <TrendingUp className="w-4 h-4 text-emerald" />
-                  <span>Executive Overview & 90-Day Financial Forecast</span>
+                  <span>{t.cmdk.viewForecast}</span>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-foreground-subtle" />
               </Command.Item>
 
               <Command.Item
-                value="view instagram ads radar targeting meta mcp kill switch"
+                value="view instagram ads radar targeting meta mcp kill switch радар target"
                 onSelect={() => {
                   setActiveTab('radar');
                   setIsCmdkOpen(false);
@@ -140,13 +136,13 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
               >
                 <div className="flex items-center gap-2.5">
                   <Radio className="w-4 h-4 text-emerald" />
-                  <span>Instagram Ad Targeting Radar (Meta MCP Command Center)</span>
+                  <span>{t.cmdk.viewRadar}</span>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-foreground-subtle" />
               </Command.Item>
 
               <Command.Item
-                value="view live bays car damage liability map walkaround inspection"
+                value="view live bays car damage liability map walkaround inspection боксы дефектовка shikast"
                 onSelect={() => {
                   setActiveTab('bays');
                   setIsCmdkOpen(false);
@@ -155,13 +151,13 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
               >
                 <div className="flex items-center gap-2.5">
                   <Car className="w-4 h-4 text-emerald" />
-                  <span>Live Bays Tracker & Digital Vehicle Walkaround Map</span>
+                  <span>{t.cmdk.viewBays}</span>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-foreground-subtle" />
               </Command.Item>
 
               <Command.Item
-                value="view chemical burn-rate consumables retention crm technician commissions"
+                value="view chemical burn-rate consumables retention crm technician commissions химия склад maosh"
                 onSelect={() => {
                   setActiveTab('operations');
                   setIsCmdkOpen(false);
@@ -170,14 +166,14 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
               >
                 <div className="flex items-center gap-2.5">
                   <FlaskConical className="w-4 h-4 text-amber" />
-                  <span>Chemical Inventory, Retention CRM & Commissions</span>
+                  <span>{t.cmdk.viewOperations}</span>
                 </div>
                 <ArrowRight className="w-3.5 h-3.5 text-foreground-subtle" />
               </Command.Item>
             </Command.Group>
 
             {/* License Plates & Vehicles */}
-            <Command.Group heading="VEHICLES & CLIENT RECORDS" className="text-[10px] font-mono text-foreground-subtle uppercase px-2 py-1">
+            <Command.Group heading={t.cmdk.vehiclesGroup} className="text-[10px] font-mono text-foreground-subtle uppercase px-2 py-1">
               {vehicles.map(v => {
                 const cust = customers.find(c => c.id === v.customerId);
 
@@ -201,17 +197,17 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
                           {v.make} {v.model}
                         </span>
                         <span className="text-[11px] text-foreground-subtle">
-                          Owner: {cust?.fullName} • {v.color}
+                          {t.cmdk.owner} {cust?.fullName} • {v.color}
                         </span>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-[10px] text-foreground-subtle">
-                        {v.inspectionMarkers.length} Pins
+                        {v.inspectionMarkers.length} {t.cmdk.pins}
                       </span>
                       <span className="text-[11px] font-mono text-emerald group-hover:underline flex items-center gap-1">
-                        Inspect Map →
+                        {t.cmdk.inspectMap}
                       </span>
                     </div>
                   </Command.Item>
@@ -223,11 +219,11 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
           {/* Footer Keyboard hints */}
           <div className="px-4 py-2 border-t border-border bg-card-subtle flex items-center justify-between text-[11px] font-mono text-foreground-subtle">
             <div className="flex items-center gap-3">
-              <span>↑↓ Navigate</span>
-              <span>↵ Select</span>
-              <span>ESC Close</span>
+              <span>{t.cmdk.footerNavigate}</span>
+              <span>{t.cmdk.footerSelect}</span>
+              <span>{t.cmdk.footerClose}</span>
             </div>
-            <span>DetailingOS Command Bar</span>
+            <span>{t.cmdk.footerTitle}</span>
           </div>
         </Command>
       </div>

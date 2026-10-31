@@ -26,6 +26,7 @@ import {
   FIVE_DAY_WEATHER,
 } from '../data/seed-data';
 import { MetaMCPService } from '../services/meta-mcp.service';
+import { SupportedLanguage, getTranslations, translations } from '../lib/i18n';
 
 export type ActiveTab = 'forecast' | 'radar' | 'bays' | 'operations';
 
@@ -37,6 +38,10 @@ export interface ToastMessage {
 }
 
 interface ShopStoreContextType {
+  language: SupportedLanguage;
+  setLanguage: (lang: SupportedLanguage) => void;
+  t: typeof translations.en;
+
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
   isCmdkOpen: boolean;
@@ -85,6 +90,20 @@ const ShopStoreContext = createContext<ShopStoreContextType | null>(null);
 const metaMcp = MetaMCPService.getInstance();
 
 export const ShopStoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [language, setLanguageState] = useState<SupportedLanguage>(() => {
+    const saved = typeof window !== 'undefined' ? localStorage.getItem('detailingos_lang') : null;
+    return saved === 'ru' || saved === 'uz' || saved === 'en' ? saved : 'en';
+  });
+
+  const setLanguage = (lang: SupportedLanguage) => {
+    setLanguageState(lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('detailingos_lang', lang);
+    }
+  };
+
+  const t = getTranslations(language);
+
   const [activeTab, setActiveTab] = useState<ActiveTab>('forecast');
   const [isCmdkOpen, setIsCmdkOpen] = useState(false);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>('veh-1');
@@ -455,6 +474,9 @@ export const ShopStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   return (
     <ShopStoreContext.Provider
       value={{
+        language,
+        setLanguage,
+        t,
         activeTab,
         setActiveTab,
         isCmdkOpen,
