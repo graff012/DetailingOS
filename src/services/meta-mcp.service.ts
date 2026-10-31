@@ -144,11 +144,11 @@ export class MetaMCPService {
   private logs: MCPToolCallLog[] = [];
   private listeners: Array<(logs: MCPToolCallLog[]) => void> = [];
 
-  // Studio Garage Coordinates (Munich Supercar Hub)
+  // Studio Garage Coordinates (Tashkent Luxury Detailing Hub)
   public readonly GARAGE_COORDINATES = {
-    lat: 48.137154,
-    lng: 11.576124,
-    address: 'Maximilianstraße 35, 80539 Munich, Germany',
+    lat: 41.311081,
+    lng: 69.279737,
+    address: 'Amir Temur Avenue 107, Tashkent City, Uzbekistan',
   };
 
   private constructor() {
@@ -160,14 +160,14 @@ export class MetaMCPService {
         toolName: 'set_geo_radius',
         status: 'SUCCESS',
         arguments: {
-          latitude: 48.137154,
-          longitude: 11.576124,
+          latitude: 41.311081,
+          longitude: 69.279737,
           radius_km: 12,
           distance_unit: 'kilometer',
         },
         response: {
           status: 'BOUND_TO_ADSET',
-          coordinates: '48.137154, 11.576124',
+          coordinates: '41.311081, 69.279737',
           active_radius: '12 km',
           potential_reach: 184000,
         },

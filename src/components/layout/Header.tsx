@@ -17,7 +17,7 @@ export const Header: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpenNewBo
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-background border border-border text-xs">
           <span className="w-2 h-2 rounded-full bg-emerald animate-pulse" />
           <span className="font-semibold text-foreground tracking-tight font-sans">
-            Munich Studio
+            {t.header.studioName}
           </span>
           <span className="text-foreground-subtle">•</span>
           <span className="flex items-center gap-1 text-foreground-muted font-mono text-[11px]">

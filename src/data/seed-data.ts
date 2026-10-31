@@ -387,7 +387,7 @@ export const INITIAL_CHEMICALS: ChemicalInventory[] = [
     burnRatePerJob: 35,
     reorderThreshold: 250,
     costPerUnit: 1.45,
-    supplier: 'Gyeon Direct Germany',
+    supplier: 'Gyeon Direct Tashkent (Official Partner)',
     lastRestockedAt: '2026-10-10T00:00:00Z',
   },
   {

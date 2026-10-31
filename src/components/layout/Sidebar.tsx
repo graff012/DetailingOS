@@ -177,7 +177,7 @@ export const Sidebar: React.FC = () => {
               {t.nav.mcpHost}
             </span>
             <span className="text-[10px] text-foreground font-semibold tabular-nums">
-              {occupiedBaysCount}/4 Bays
+              {t.nav.studioLocation}
             </span>
           </div>
         ) : (
