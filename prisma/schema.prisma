@@ -1,0 +1,254 @@
+// Prisma schema for DetailingOS
+// Luxury Auto-Detailing ERP, Finance Engine & Instagram MCP Command Center
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum AcquisitionChannel {
+  INSTAGRAM_REEL
+  INSTAGRAM_DM
+  META_AD
+  TELEGRAM_DIRECT
+  REPEAT_CLIENT
+  VIP_REFERRAL
+  WALK_IN
+}
+
+enum CoatingType {
+  NONE
+  CARNAUBA_WAX
+  SYNTHETIC_SEALANT
+  CERAMIC_1_YEAR
+  CERAMIC_3_YEAR_GYEON
+  CERAMIC_5_YEAR_MOHS
+  PPF_XPEL_STEALTH
+  PPF_XPEL_ULTIMATE_PLUS
+}
+
+enum BookingStatus {
+  SCHEDULED
+  CHECKED_IN
+  IN_PROGRESS
+  IR_CURING
+  QUALITY_INSPECTION
+  COMPLETED
+  CANCELLED
+}
+
+enum PackageType {
+  EXPRESS_DECON_WASH
+  MAINTENANCE_CERAMIC_WASH
+  INTERIOR_DEEP_CLEAN
+  STAGE_1_PAINT_CORRECTION
+  STAGE_2_CERAMIC_PACKAGE
+  FULL_FRONT_PPF
+  TRACK_PACK_PPF
+  FULL_VEHICLE_PPF
+}
+
+enum PanelZone {
+  FRONT_BUMPER
+  HOOD
+  FRONT_LEFT_FENDER
+  FRONT_RIGHT_FENDER
+  DRIVER_DOOR
+  PASSENGER_DOOR
+  REAR_LEFT_DOOR
+  REAR_RIGHT_DOOR
+  ROOF
+  REAR_LEFT_QUARTER
+  REAR_RIGHT_QUARTER
+  TRUNK_LID
+  REAR_BUMPER
+  WHEELS_AND_CALIPERS
+  WINDSHIELD
+}
+
+enum DamageType {
+  SCRATCH
+  DENT
+  ROCK_CHIP
+  SWIRL_MARKS
+  CLEARCOAT_OXIDATION
+  CURB_RASH
+  WATER_SPOTS
+}
+
+enum ChemicalCategory {
+  COATING_CERAMIC
+  PPF_FILM
+  POLISH_COMPOUND
+  CLEANER_DEGREASER
+  WASH_SHAMPOO
+  ACCESSORY_PAD
+  MICROFIBER
+}
+
+enum CampaignStatus {
+  ACTIVE
+  PAUSED
+  ARCHIVED
+  KILL_SWITCHED
+}
+
+enum CreativeType {
+  REEL_WATER_BEADING
+  REEL_50_50_CORRECTION
+  REEL_PPF_SELF_HEALING
+  POST_CAROUSEL_TRANSFORMATION
+  STORY_POLL_DISCOUNT
+}
+
+model Customer {
+  id                 String             @id @default(cuid())
+  fullName           String
+  phone              String
+  instagramHandle    String?
+  telegramUsername   String?
+  acquisitionChannel AcquisitionChannel @default(INSTAGRAM_REEL)
+  notes              String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  vehicles Vehicle[]
+
+  @@index([instagramHandle])
+  @@index([phone])
+}
+
+model Vehicle {
+  id                   String       @id @default(cuid())
+  customerId           String
+  licensePlate         String       @unique
+  make                 String
+  model                String
+  year                 Int
+  color                String
+  paintCode            String?
+  coatingType          CoatingType  @default(NONE)
+  coatingAppliedAt     DateTime?
+  nextMaintenanceDueAt DateTime?
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  customer          Customer           @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  bookings          Booking[]
+  inspectionMarkers InspectionMarker[]
+
+  @@index([licensePlate])
+  @@index([customerId])
+  @@index([nextMaintenanceDueAt])
+}
+
+model Booking {
+  id             String        @id @default(cuid())
+  vehicleId      String
+  bayNumber      Int // 1 to 4
+  packageType    PackageType
+  status         BookingStatus @default(SCHEDULED)
+  totalPrice     Float
+  laborCost      Float
+  chemicalCost   Float
+  billableHours  Float
+  technicianId   String?
+  igCampaignId   String?
+  scheduledAt    DateTime
+  completedAt    DateTime?
+  inspectionDone Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  vehicle           Vehicle            @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  technician        Technician?        @relation(fields: [technicianId], references: [id])
+  igCampaign        IgCampaign?        @relation(fields: [igCampaignId], references: [id])
+  inspectionMarkers InspectionMarker[]
+
+  @@index([vehicleId])
+  @@index([bayNumber])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+model InspectionMarker {
+  id          String     @id @default(cuid())
+  bookingId   String?
+  vehicleId   String
+  panelZone   PanelZone
+  damageType  DamageType
+  coordinateX Float // Percentage 0-100 on vehicle SVG
+  coordinateY Float // Percentage 0-100 on vehicle SVG
+  notes       String?
+  photoUrl    String?
+  createdAt   DateTime   @default(now())
+
+  booking Booking? @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+  vehicle Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([vehicleId])
+}
+
+model ChemicalInventory {
+  id               String           @id @default(cuid())
+  name             String
+  brand            String
+  category         ChemicalCategory
+  unit             String // 'ml', 'meter', 'units', 'pads'
+  currentStock     Float
+  burnRatePerJob   Float
+  reorderThreshold Float
+  costPerUnit      Float
+  supplier         String?
+  lastRestockedAt  DateTime?        @default(now())
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([currentStock])
+}
+
+model Technician {
+  id                 String    @id @default(cuid())
+  name               String
+  role               String // Lead Detailer, PPF Specialist, Ceramic Tech, Apprentice
+  commissionRate     Float // 0.25 to 0.30
+  activeBay          Int? // Current bay assigned
+  baseSalaryMonthly  Float     @default(3200.0)
+  totalCompletedJobs Int       @default(0)
+  phone              String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  bookings Booking[]
+}
+
+model IgCampaign {
+  id                 String         @id @default(cuid())
+  metaCampaignId     String         @unique
+  name               String
+  creativeType       CreativeType
+  radiusKm           Float // 5 to 25 km
+  targetInterests    String[] // e.g. ["BMW M", "Porsche", "Track Days"]
+  ageMin             Int            @default(25)
+  ageMax             Int            @default(60)
+  dailyBudget        Float
+  totalSpend         Float          @default(0)
+  leadsGenerated     Int            @default(0)
+  bookingsAttributed Int            @default(0)
+  revenueAttributed  Float          @default(0)
+  autoKillCplLimit   Float          @default(18.0) // Auto-pause if CPL > limit
+  weatherTriggered   Boolean        @default(false)
+  status             CampaignStatus @default(ACTIVE)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  bookings Booking[]
+
+  @@index([status])
+  @@index([metaCampaignId])
+}
