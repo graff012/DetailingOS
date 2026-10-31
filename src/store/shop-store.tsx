@@ -91,8 +91,17 @@ const metaMcp = MetaMCPService.getInstance();
 
 export const ShopStoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<SupportedLanguage>(() => {
-    const saved = typeof window !== 'undefined' ? localStorage.getItem('detailingos_lang') : null;
-    return saved === 'ru' || saved === 'uz' || saved === 'en' ? saved : 'en';
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlLang = params.get('lang');
+      if (urlLang === 'ru' || urlLang === 'uz' || urlLang === 'en') {
+        localStorage.setItem('detailingos_lang', urlLang);
+        return urlLang;
+      }
+      const saved = localStorage.getItem('detailingos_lang');
+      return saved === 'ru' || saved === 'uz' || saved === 'en' ? saved : 'en';
+    }
+    return 'en';
   });
 
   const setLanguage = (lang: SupportedLanguage) => {
@@ -104,7 +113,16 @@ export const ShopStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const t = getTranslations(language);
 
-  const [activeTab, setActiveTab] = useState<ActiveTab>('forecast');
+  const [activeTab, setActiveTab] = useState<ActiveTab>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlTab = params.get('tab') as ActiveTab;
+      if (urlTab === 'forecast' || urlTab === 'radar' || urlTab === 'bays' || urlTab === 'operations') {
+        return urlTab;
+      }
+    }
+    return 'forecast';
+  });
   const [isCmdkOpen, setIsCmdkOpen] = useState(false);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>('veh-1');
 

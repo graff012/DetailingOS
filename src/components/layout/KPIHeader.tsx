@@ -1,29 +1,7 @@
 import React from 'react';
-import { ResponsiveContainer, LineChart, Line } from 'recharts';
 import { DollarSign, Activity, Target, Zap } from 'lucide-react';
 import { useShopStore } from '../../store/shop-store';
 import { cn } from '../../lib/utils';
-
-// Sparkline Mock Data
-const REVENUE_SPARK = [
-  { val: 11200 }, { val: 11800 }, { val: 12400 }, { val: 11900 },
-  { val: 13100 }, { val: 13800 }, { val: 14280 }
-];
-
-const UTILIZATION_SPARK = [
-  { val: 72 }, { val: 74 }, { val: 79 }, { val: 81 },
-  { val: 78 }, { val: 84 }, { val: 82.5 }
-];
-
-const CAC_SPARK = [
-  { val: 24.5 }, { val: 23.0 }, { val: 21.2 }, { val: 19.8 },
-  { val: 19.1 }, { val: 18.9 }, { val: 18.4 }
-];
-
-const ROAS_SPARK = [
-  { val: 3.8 }, { val: 4.1 }, { val: 4.3 }, { val: 4.0 },
-  { val: 4.5 }, { val: 4.7 }, { val: 4.82 }
-];
 
 export const KPIHeader: React.FC = () => {
   const { bayUtilSlider, adSpendSlider, t } = useShopStore();
@@ -36,9 +14,6 @@ export const KPIHeader: React.FC = () => {
       deltaType: 'positive',
       subtext: t.kpi.revSubtext,
       icon: DollarSign,
-      sparkData: REVENUE_SPARK,
-      color: '#10B981',
-      unit: '$',
     },
     {
       title: t.kpi.bayUtil,
@@ -47,20 +22,14 @@ export const KPIHeader: React.FC = () => {
       deltaType: 'positive',
       subtext: t.kpi.bayUtilSubtext,
       icon: Activity,
-      sparkData: UTILIZATION_SPARK,
-      color: '#10B981',
-      unit: '%',
     },
     {
       title: t.kpi.cac,
       value: '$18.40',
       delta: '-12.3%',
-      deltaType: 'positive', // Lower CAC is good
+      deltaType: 'positive',
       subtext: t.kpi.cacSubtext,
       icon: Target,
-      sparkData: CAC_SPARK,
-      color: '#10B981',
-      unit: '$',
     },
     {
       title: t.kpi.roas,
@@ -69,68 +38,49 @@ export const KPIHeader: React.FC = () => {
       deltaType: 'positive',
       subtext: `$${adSpendSlider}/d ${t.kpi.roasSubtext}`,
       icon: Zap,
-      sparkData: ROAS_SPARK,
-      color: '#10B981',
-      unit: 'x',
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-4 border-b border-border bg-card/40">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-4 sm:px-6 border-b border-border bg-card/40">
       {kpis.map((kpi, idx) => {
         const Icon = kpi.icon;
 
         return (
           <div
             key={idx}
-            className="p-3.5 rounded bg-card border border-border hover:border-border-bright transition-all shadow-card flex flex-col justify-between"
+            className="p-4 rounded-lg bg-card border border-border hover:border-border-bright transition-all shadow-card flex flex-col justify-between space-y-2.5"
           >
             {/* Top row: Label & Icon */}
-            <div className="flex items-center justify-between text-xs text-foreground-muted mb-2">
-              <span className="font-sans font-medium">{kpi.title}</span>
+            <div className="flex items-center justify-between text-xs text-foreground-muted">
+              <span className="font-sans font-medium text-xs text-foreground-subtle tracking-tight">
+                {kpi.title}
+              </span>
               <div className="w-5 h-5 rounded bg-background border border-border flex items-center justify-center text-foreground-subtle">
-                <Icon className="w-3 h-3" />
+                <Icon className="w-3 h-3 text-emerald" />
               </div>
             </div>
 
-            {/* Middle row: Big Metric & Delta */}
-            <div className="flex items-baseline justify-between">
-              <div>
-                <span className="text-2xl font-bold font-mono tracking-tight text-foreground tabular-nums">
-                  {kpi.value}
-                </span>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span
-                    className={cn(
-                      'text-[11px] font-mono font-medium px-1.5 py-0.2 rounded border tabular-nums',
-                      kpi.deltaType === 'positive'
-                        ? 'text-emerald bg-emerald/10 border-emerald/20'
-                        : 'text-guardsRed bg-guardsRed/10 border-guardsRed/20'
-                    )}
-                  >
-                    {kpi.delta}
-                  </span>
-                  <span className="text-[10px] text-foreground-subtle font-sans truncate">
-                    {kpi.subtext}
-                  </span>
-                </div>
-              </div>
+            {/* Middle row: Big Metric */}
+            <div className="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-foreground tabular-nums">
+              {kpi.value}
+            </div>
 
-              {/* Sparkline Visual */}
-              <div className="w-18 h-9 shrink-0">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={kpi.sparkData}>
-                    <Line
-                      type="monotone"
-                      dataKey="val"
-                      stroke={kpi.color}
-                      strokeWidth={1.5}
-                      dot={false}
-                      isAnimationActive={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
+            {/* Bottom row: Delta Tag & Full-width Context (Never Truncates) */}
+            <div className="flex items-center gap-2 pt-0.5 text-xs">
+              <span
+                className={cn(
+                  'text-[11px] font-mono font-bold px-1.5 py-0.2 rounded border tabular-nums shrink-0',
+                  kpi.deltaType === 'positive'
+                    ? 'text-emerald bg-emerald/10 border-emerald/20'
+                    : 'text-guardsRed bg-guardsRed/10 border-guardsRed/20'
+                )}
+              >
+                {kpi.delta}
+              </span>
+              <span className="text-[11px] text-foreground-subtle font-sans whitespace-nowrap overflow-hidden text-ellipsis">
+                {kpi.subtext}
+              </span>
             </div>
           </div>
         );
