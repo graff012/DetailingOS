@@ -237,3 +237,52 @@ export interface MCPToolCallLog {
   response?: Record<string, unknown>;
   latencyMs: number;
 }
+
+// Yong'oq Integration Types
+export type YongoqSyncMode = 'WEBHOOK' | 'REST_API' | 'JSON_IMPORT';
+
+export interface YongoqClientPayload {
+  client_id: string;
+  full_name: string;
+  phone: string;
+  created_at: string;
+  vehicle?: {
+    license_plate?: string;
+    make?: string;
+    model?: string;
+    color?: string;
+  };
+  notes?: string;
+}
+
+export interface YongoqSalePayload {
+  sale_id: string;
+  client_id: string;
+  client_phone?: string;
+  client_name?: string;
+  sale_date: string;
+  vehicle_plate?: string;
+  services?: Array<{
+    service_code?: string;
+    service_name: string;
+    unit_price?: number;
+    quantity?: number;
+    total_price: number;
+  }>;
+  total_amount: number;
+  currency?: 'USD' | 'UZS';
+  payment_method?: 'CASH' | 'CARD' | 'CLICK' | 'PAYME' | string;
+  cashier_or_master?: string;
+  status?: string;
+}
+
+export interface YongoqSyncLog {
+  id: string;
+  timestamp: string;
+  mode: YongoqSyncMode;
+  clientsSynced: number;
+  salesSynced: number;
+  revenueSyncedUsd: number;
+  status: 'SUCCESS' | 'WARNING' | 'ERROR';
+  message: string;
+}

@@ -7,6 +7,7 @@ import { MobileBottomNav } from './components/layout/MobileBottomNav';
 import { CommandMenu } from './components/cmdk/CommandMenu';
 import { ToastContainer } from './components/ui/ToastContainer';
 import { NewBookingModal } from './components/operations/NewBookingModal';
+import { YongoqIntegrationModal } from './components/operations/YongoqIntegrationModal';
 import { ExecutiveForecastTab } from './components/dashboard/ExecutiveForecastTab';
 import { IGRadarTab } from './components/ig-radar/IGRadarTab';
 import { LiveBaysWalkaroundTab } from './components/bays/LiveBaysWalkaroundTab';
@@ -14,7 +15,7 @@ import { OperationsTab } from './components/operations/OperationsTab';
 import { cn } from './lib/utils';
 
 const MainLayout: React.FC = () => {
-  const { activeTab } = useShopStore();
+  const { activeTab, isYongoqModalOpen, setIsYongoqModalOpen } = useShopStore();
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -106,6 +107,10 @@ const MainLayout: React.FC = () => {
       <NewBookingModal
         isOpen={isBookingModalOpen}
         onClose={() => setIsBookingModalOpen(false)}
+      />
+      <YongoqIntegrationModal
+        isOpen={isYongoqModalOpen}
+        onClose={() => setIsYongoqModalOpen(false)}
       />
       <ToastContainer />
     </div>

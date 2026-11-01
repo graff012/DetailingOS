@@ -13,6 +13,9 @@ import {
   InspectionMarker,
   DamageType,
   PanelZone,
+  YongoqClientPayload,
+  YongoqSalePayload,
+  YongoqSyncLog,
 } from '../types';
 import {
   INITIAL_CUSTOMERS,
@@ -26,6 +29,7 @@ import {
   FIVE_DAY_WEATHER,
 } from '../data/seed-data';
 import { MetaMCPService } from '../services/meta-mcp.service';
+import { YongoqSyncService } from '../services/yongoq-sync.service';
 import { SupportedLanguage, getTranslations, translations } from '../lib/i18n';
 
 export type ActiveTab = 'forecast' | 'radar' | 'bays' | 'operations';
@@ -85,6 +89,14 @@ interface ShopStoreContextType {
   sendRetentionReminder: (vehicleId: string, channel: 'IG_DM' | 'TELEGRAM' | 'SMS') => void;
   pushMediaToIgQueue: (mediaId: string) => Promise<void>;
   addNewBooking: (newBooking: Partial<Booking>) => void;
+
+  // Yong'oq Integration
+  yongoqLogs: YongoqSyncLog[];
+  isYongoqModalOpen: boolean;
+  setIsYongoqModalOpen: (open: boolean) => void;
+  syncYongoqClient: (payload: YongoqClientPayload) => void;
+  syncYongoqSale: (payload: YongoqSalePayload) => void;
+  importYongoqJson: (jsonString: string) => { success: boolean; clientsCount: number; salesCount: number; error?: string };
 }
 
 const ShopStoreContext = createContext<ShopStoreContextType | null>(null);
@@ -144,7 +156,8 @@ export const ShopStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [adSpendSlider, setAdSpendSlider] = useState<number>(65);
   const [bayUtilSlider, setBayUtilSlider] = useState<number>(82);
 
-  const [customers] = useState<Customer[]>(INITIAL_CUSTOMERS);
+  const yongoqService = YongoqSyncService.getInstance();
+  const [customers, setCustomers] = useState<Customer[]>(INITIAL_CUSTOMERS);
   const [vehicles, setVehicles] = useState<Vehicle[]>(INITIAL_VEHICLES);
   const [bookings, setBookings] = useState<Booking[]>(INITIAL_BOOKINGS);
   const [bays, setBays] = useState<Bay[]>(INITIAL_BAYS);
@@ -154,7 +167,17 @@ export const ShopStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [beforeAfterMedia, setBeforeAfterMedia] = useState<BeforeAfterMedia[]>(INITIAL_BEFORE_AFTER);
   const [weather] = useState<WeatherCondition[]>(FIVE_DAY_WEATHER);
   const [mcpLogs, setMcpLogs] = useState<MCPToolCallLog[]>(metaMcp.getLogs());
+  const [yongoqLogs, setYongoqLogs] = useState<YongoqSyncLog[]>(yongoqService.getLogs());
+  const [isYongoqModalOpen, setIsYongoqModalOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  // Listen to Yong'oq Service real-time logs
+  useEffect(() => {
+    const unsubscribe = yongoqService.subscribe(logs => {
+      setYongoqLogs(logs);
+    });
+    return unsubscribe;
+  }, []);
 
   // Listen to MCP Service real-time logs
   useEffect(() => {
@@ -504,6 +527,81 @@ export const ShopStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     addToast('Booking Created', `Booked ${bk.vehiclePlate} in Bay ${bk.bayNumber}.`, 'success');
   };
 
+  const syncYongoqClient = (payload: YongoqClientPayload) => {
+    const { customer, vehicle } = yongoqService.processClientPayload(payload);
+    setCustomers(prev => [customer, ...prev]);
+    setVehicles(prev => [vehicle, ...prev]);
+    yongoqService.addSyncLog({
+      mode: 'WEBHOOK',
+      clientsSynced: 1,
+      salesSynced: 0,
+      revenueSyncedUsd: 0,
+      status: 'SUCCESS',
+      message: `Client ${customer.fullName} (${vehicle.licensePlate}) ingested`,
+    });
+    addToast(
+      'Yong‘oq Webhook Ingested',
+      `${customer.fullName} • ${vehicle.licensePlate} (${vehicle.make} ${vehicle.model})`,
+      'success'
+    );
+  };
+
+  const syncYongoqSale = (payload: YongoqSalePayload) => {
+    const booking = yongoqService.processSalePayload(payload);
+    setBookings(prev => [booking, ...prev]);
+    yongoqService.addSyncLog({
+      mode: 'WEBHOOK',
+      clientsSynced: 0,
+      salesSynced: 1,
+      revenueSyncedUsd: booking.totalPrice,
+      status: 'SUCCESS',
+      message: `Sale ${payload.sale_id || ''} (+$${booking.totalPrice}) synced via ${payload.payment_method || 'Click'}`,
+    });
+    addToast(
+      'Yong‘oq Sale Ingested',
+      `+$${booking.totalPrice} • ${booking.customerName} (${payload.payment_method || 'POS'})`,
+      'success'
+    );
+  };
+
+  const importYongoqJson = (jsonString: string) => {
+    try {
+      const data = JSON.parse(jsonString);
+      let clientsCount = 0;
+      let salesCount = 0;
+      let totalRev = 0;
+
+      const items = Array.isArray(data) ? data : [data];
+      for (const item of items) {
+        if (item.phone || item.full_name) {
+          const { customer, vehicle } = yongoqService.processClientPayload(item as YongoqClientPayload);
+          setCustomers(prev => [customer, ...prev]);
+          setVehicles(prev => [vehicle, ...prev]);
+          clientsCount++;
+        } else if (item.amount || item.total_amount) {
+          const booking = yongoqService.processSalePayload(item as YongoqSalePayload);
+          setBookings(prev => [booking, ...prev]);
+          salesCount++;
+          totalRev += booking.totalPrice;
+        }
+      }
+
+      yongoqService.addSyncLog({
+        mode: 'JSON_IMPORT',
+        clientsSynced: clientsCount,
+        salesSynced: salesCount,
+        revenueSyncedUsd: totalRev,
+        status: 'SUCCESS',
+        message: `Batch JSON import: ${clientsCount} clients, ${salesCount} sales (+$${totalRev})`,
+      });
+
+      addToast('Yong‘oq Batch Import', `Imported ${clientsCount} clients and ${salesCount} sales`, 'success');
+      return { success: true, clientsCount, salesCount };
+    } catch (e) {
+      return { success: false, clientsCount: 0, salesCount: 0, error: (e as Error).message };
+    }
+  };
+
   return (
     <ShopStoreContext.Provider
       value={{
@@ -547,6 +645,12 @@ export const ShopStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         sendRetentionReminder,
         pushMediaToIgQueue,
         addNewBooking,
+        yongoqLogs,
+        isYongoqModalOpen,
+        setIsYongoqModalOpen,
+        syncYongoqClient,
+        syncYongoqSale,
+        importYongoqJson,
       }}
     >
       {children}

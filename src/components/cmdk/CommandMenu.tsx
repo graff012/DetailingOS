@@ -9,6 +9,7 @@ import {
   FlaskConical,
   Wrench,
   ArrowRight,
+  Share2,
 } from 'lucide-react';
 import { useShopStore } from '../../store/shop-store';
 
@@ -21,6 +22,7 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
     setActiveTab,
     setSelectedVehicleId,
     activateWeatherPromotion,
+    setIsYongoqModalOpen,
     campaigns,
     t,
   } = useShopStore();
@@ -110,6 +112,21 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
                   <span className="font-mono text-[10px] text-emerald">1-Click MCP</span>
                 </Command.Item>
               )}
+
+              <Command.Item
+                value="yongoq sync integration webhook api sales clients pos орех"
+                onSelect={() => {
+                  setIsCmdkOpen(false);
+                  setIsYongoqModalOpen(true);
+                }}
+                className="flex items-center justify-between px-2.5 py-2 rounded text-foreground hover:bg-card-hover cursor-pointer group transition-colors"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Share2 className="w-4 h-4 text-amber" />
+                  <span className="font-medium text-xs">Yong‘oq Ingestion Gateway (Webhooks & API)</span>
+                </div>
+                <span className="font-mono text-[10px] text-amber">LIVE GATEWAY</span>
+              </Command.Item>
             </Command.Group>
 
             {/* Navigation Commands */}

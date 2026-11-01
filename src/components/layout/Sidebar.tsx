@@ -9,6 +9,7 @@ import {
   Zap,
   Sparkles,
   X,
+  Share2,
 } from 'lucide-react';
 import { useShopStore, ActiveTab } from '../../store/shop-store';
 import { cn } from '../../lib/utils';
@@ -22,6 +23,7 @@ export const Sidebar: React.FC = () => {
     setIsCmdkOpen,
     isMobileMenuOpen,
     setIsMobileMenuOpen,
+    setIsYongoqModalOpen,
     t,
   } = useShopStore();
   const [collapsed, setCollapsed] = useState(false);
@@ -180,6 +182,26 @@ export const Sidebar: React.FC = () => {
           })}
         </nav>
 
+        {/* Quick Yong'oq Gateway Link */}
+        <div className="px-2 pb-2">
+          <button
+            onClick={() => setIsYongoqModalOpen(true)}
+            className={cn(
+              'w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-left transition-all text-xs font-medium text-foreground-muted hover:text-foreground hover:bg-card-hover/60 border border-border/50 group',
+              collapsed && 'justify-center px-0'
+            )}
+            title="Yong‘oq Ingestion Gateway"
+          >
+            <Share2 className="w-4 h-4 text-amber shrink-0 group-hover:scale-110 transition-transform" />
+            {!collapsed && (
+              <div className="flex-1 min-w-0 flex items-center justify-between">
+                <span className="truncate text-xs font-sans">Yong‘oq Sync</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
+              </div>
+            )}
+          </button>
+        </div>
+
         {/* Sleek Studio Footer */}
         <div className="p-3 border-t border-border bg-card-subtle/50">
           {!collapsed ? (
@@ -306,6 +328,23 @@ export const Sidebar: React.FC = () => {
                 );
               })}
             </nav>
+
+            {/* Quick Yong'oq Gateway Link Mobile */}
+            <div className="px-2 pb-2">
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  setIsYongoqModalOpen(true);
+                }}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-left transition-all text-xs font-medium text-foreground-muted hover:text-foreground hover:bg-card-hover/60 border border-border/50 group"
+              >
+                <Share2 className="w-4 h-4 text-amber shrink-0 group-hover:scale-110 transition-transform" />
+                <div className="flex-1 min-w-0 flex items-center justify-between">
+                  <span className="truncate text-xs font-sans">Yong‘oq Sync Gateway</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
+                </div>
+              </button>
+            </div>
 
             {/* Mobile Footer */}
             <div className="p-3 border-t border-border bg-card-subtle/50 text-[11px] font-mono text-foreground-subtle flex items-center justify-between">

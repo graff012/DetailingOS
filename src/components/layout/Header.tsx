@@ -4,12 +4,13 @@ import {
   Plus,
   Search,
   Menu,
+  Share2,
 } from 'lucide-react';
 import { useShopStore } from '../../store/shop-store';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
 export const Header: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpenNewBooking }) => {
-  const { setIsCmdkOpen, setIsMobileMenuOpen, language, t } = useShopStore();
+  const { setIsCmdkOpen, setIsMobileMenuOpen, setIsYongoqModalOpen, language, t } = useShopStore();
 
   return (
     <header className="h-14 bg-card border-b border-border px-2.5 sm:px-6 flex items-center justify-between select-none shrink-0 z-20">
@@ -37,8 +38,19 @@ export const Header: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpenNewBo
         </div>
       </div>
 
-      {/* Right: Actions, Global Search, Language Switcher & Booking CTA */}
+      {/* Right: Actions, Global Search, Yong'oq Gateway, Language Switcher & Booking CTA */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+        {/* Yong'oq Integration Trigger */}
+        <button
+          onClick={() => setIsYongoqModalOpen(true)}
+          className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-background border border-border hover:border-amber/40 text-xs font-mono text-foreground-muted hover:text-foreground transition-all group"
+          title="Yong‘oq Ingestion Gateway (Webhooks & API)"
+        >
+          <Share2 className="w-3.5 h-3.5 text-amber group-hover:scale-110 transition-transform" />
+          <span className="font-sans text-xs">Yong‘oq</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald animate-pulse" />
+        </button>
+
         <button
           onClick={() => setIsCmdkOpen(true)}
           className="hidden sm:flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-md bg-background border border-border hover:border-border-bright text-xs text-foreground-muted hover:text-foreground transition-all group"
