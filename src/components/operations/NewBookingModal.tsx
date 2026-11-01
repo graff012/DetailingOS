@@ -93,9 +93,12 @@ export const NewBookingModal: React.FC<NewBookingModalProps> = ({ isOpen, onClos
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
+      onClick={onClose}
+    >
       <div
-        className="w-full max-w-lg bg-card border border-border shadow-popover rounded-lg overflow-hidden flex flex-col"
+        className="w-full max-w-lg bg-card border border-border shadow-popover rounded-lg overflow-hidden flex flex-col max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}

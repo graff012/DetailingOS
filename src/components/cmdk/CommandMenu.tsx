@@ -43,9 +43,12 @@ export const CommandMenu: React.FC<{ onOpenNewBooking: () => void }> = ({ onOpen
   const weatherCamp = campaigns.find(c => c.weatherTriggered);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center pt-12 sm:pt-20 px-3 sm:px-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-150"
+      onClick={() => setIsCmdkOpen(false)}
+    >
       <div
-        className="w-full max-w-2xl bg-card border border-border shadow-popover rounded-lg overflow-hidden flex flex-col"
+        className="w-full max-w-2xl bg-card border border-border shadow-popover rounded-lg overflow-hidden flex flex-col max-h-[85vh]"
         onClick={e => e.stopPropagation()}
       >
         <Command

@@ -46,6 +46,8 @@ interface ShopStoreContextType {
   setActiveTab: (tab: ActiveTab) => void;
   isCmdkOpen: boolean;
   setIsCmdkOpen: (open: boolean) => void;
+  isMobileMenuOpen: boolean;
+  setIsMobileMenuOpen: (open: boolean) => void;
   selectedVehicleId: string;
   setSelectedVehicleId: (id: string) => void;
 
@@ -123,7 +125,20 @@ export const ShopStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
     return 'forecast';
   });
-  const [isCmdkOpen, setIsCmdkOpen] = useState(false);
+  const [isCmdkOpen, setIsCmdkOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('cmdk') === 'open';
+    }
+    return false;
+  });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('menu') === 'open';
+    }
+    return false;
+  });
   const [selectedVehicleId, setSelectedVehicleId] = useState<string>('veh-1');
 
   const [adSpendSlider, setAdSpendSlider] = useState<number>(65);
@@ -499,6 +514,8 @@ export const ShopStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         setActiveTab,
         isCmdkOpen,
         setIsCmdkOpen,
+        isMobileMenuOpen,
+        setIsMobileMenuOpen,
         selectedVehicleId,
         setSelectedVehicleId,
         adSpendSlider,

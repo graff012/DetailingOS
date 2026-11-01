@@ -9,7 +9,7 @@ export const ToastContainer: React.FC = () => {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+    <div className="fixed bottom-16 sm:bottom-4 right-2 sm:right-4 left-2 sm:left-auto z-50 flex flex-col gap-2 sm:max-w-sm pointer-events-none">
       {toasts.map(toast => {
         const icons = {
           success: CheckCircle2,

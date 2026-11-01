@@ -85,7 +85,7 @@ export const ExecutiveForecastTab: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-mono">
+          <div className="flex items-center gap-3 sm:gap-4 text-xs font-mono flex-wrap">
             <div className="text-right">
               <div className="text-[10px] text-foreground-subtle uppercase">{t.forecast.total90d}</div>
               <div className="text-sm font-bold text-emerald tabular-nums">
@@ -143,7 +143,7 @@ export const ExecutiveForecastTab: React.FC = () => {
           </div>
 
           {/* Sliders Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5 pt-1">
             {/* Slider 1: Ad Spend */}
             <div className="space-y-1.5 p-3 rounded-md bg-background border border-border/70">
               <div className="flex justify-between items-center text-xs">
@@ -198,8 +198,8 @@ export const ExecutiveForecastTab: React.FC = () => {
 
         {/* 2. Recharts Area Chart */}
         <div className="space-y-2 pt-2">
-          <div className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-3 font-mono text-[11px]">
+          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-mono text-[11px]">
               <span className="flex items-center gap-1 text-foreground">
                 <span className="w-2.5 h-0.5 bg-foreground" /> {t.forecast.histActuals}
               </span>
@@ -215,7 +215,7 @@ export const ExecutiveForecastTab: React.FC = () => {
             </span>
           </div>
 
-          <div className="h-64 w-full">
+          <div className="h-56 sm:h-64 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart
                 data={forecastData}
@@ -234,7 +234,7 @@ export const ExecutiveForecastTab: React.FC = () => {
                   fontSize={10}
                   tickLine={false}
                   axisLine={{ stroke: '#27272A' }}
-                  interval={14}
+                  interval={28}
                   fontFamily="JetBrains Mono"
                 />
                 <YAxis
@@ -460,7 +460,7 @@ export const ExecutiveForecastTab: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-[11px] font-mono text-foreground-subtle">
+          <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] font-mono text-foreground-subtle">
             <span>{t.forecast.bay2Capacity} {bottleneck.maxFeasibleExpressWashes} slots/wk</span>
             <span className={bottleneck.isBottleneckFeasible ? 'text-emerald font-semibold' : 'text-amber font-semibold'}>
               {bottleneck.isBottleneckFeasible

@@ -291,26 +291,26 @@ export const OperationsTab: React.FC = () => {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-3 gap-2 pt-1 border-t border-border/50 text-[11px]">
-                    <div>
-                      <span className="text-[10px] text-foreground-subtle block">{t.operations.baseSalary}</span>
-                      <span className="font-bold text-foreground tabular-nums">
+                  <div className="grid grid-cols-3 gap-1.5 pt-1 border-t border-border/50 text-[10px] sm:text-[11px]">
+                    <div className="min-w-0">
+                      <span className="text-[9px] sm:text-[10px] text-foreground-subtle block truncate">{t.operations.baseSalary}</span>
+                      <span className="font-bold text-foreground tabular-nums truncate block">
                         {formatCurrency(tech.baseSalaryMonthly)}
                       </span>
                     </div>
 
-                    <div>
-                      <span className="text-[10px] text-foreground-subtle block">
+                    <div className="min-w-0">
+                      <span className="text-[9px] sm:text-[10px] text-foreground-subtle block truncate">
                         {t.operations.commission} ({tech.totalCompletedJobs}):
                       </span>
-                      <span className="font-bold text-emerald tabular-nums">
+                      <span className="font-bold text-emerald tabular-nums truncate block">
                         +{formatCurrency(commissionEarned)}
                       </span>
                     </div>
 
-                    <div className="text-right">
-                      <span className="text-[10px] text-foreground-subtle block">{t.operations.totalPayout}</span>
-                      <span className="font-bold text-foreground text-xs tabular-nums">
+                    <div className="text-right min-w-0">
+                      <span className="text-[9px] sm:text-[10px] text-foreground-subtle block truncate">{t.operations.totalPayout}</span>
+                      <span className="font-bold text-foreground text-xs tabular-nums truncate block">
                         {formatCurrency(totalPayout)}
                       </span>
                     </div>

@@ -39,3 +39,26 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #3F3F46;
 }
+
+/* Hide scrollbar for clean horizontal swipes */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Centered Carousel Snap Container */
+.kpi-carousel-snap {
+  padding-left: max(16px, calc(50% - 125px));
+  padding-right: max(16px, calc(50% - 125px));
+  scroll-padding: 0 calc(50% - 125px);
+}
+@media (min-width: 1024px) {
+  .kpi-carousel-snap {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    scroll-padding: 0;
+  }
+}
