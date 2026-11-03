@@ -40,7 +40,9 @@ export const YongoqIntegrationModal: React.FC<YongoqIntegrationModalProps> = ({
 
   if (!isOpen) return null;
 
-  const webhookUrl = 'https://studio.detailingos.uz/api/webhooks/yongoq';
+  const webhookUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/api/webhooks/yongoq`
+    : 'https://detailing-os-brown.vercel.app/api/webhooks/yongoq';
 
   const copyToClipboard = (text: string, type: 'secret' | 'url') => {
     navigator.clipboard.writeText(text);
